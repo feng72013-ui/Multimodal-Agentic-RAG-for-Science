@@ -32,13 +32,19 @@ MARS Scholar 是一个面向科研场景的多模态、多智能体 RAG 助手�
 
 ## 项目截图
 
-建议把截图放在 `docs/images/` 下，然后在这里引用：
+README 中的图片不能放在代码块里，否则 GitHub 只会把它当作普通文本显示。
 
-```md
+### 知识库管理
+
 ![知识库管理](docs/images/knowledge-base.png)
+
+### 文献问答
+
 ![文献问答](docs/images/chat-workspace.png)
+
+### 模型配置
+
 ![模型配置](docs/images/model-config.png)
-```
 
 ## 目录结构
 
