@@ -18,6 +18,18 @@ frontend/
 .agents/
 .codex/
 
+# Local planning / internal build notes not meant for GitHub.
+plan/
+docs/profile_store_pipeline.md
+docs/stage0_acceptance_checklist.md
+docs/stage0_baseline_report.md
+docs/stage0_current_state.md
+docs/stage1_intent_routing.md
+docs/stage2_on_demand_redesign.md
+docs/stage2_paper_profiles.md
+docs/stage3_idea_review.md
+docs/stage4_multi_agent.md
+
 # Large generated data. Keep the pipeline code in git; regenerate these locally.
 data/papers/
 data/processed_ocr/
