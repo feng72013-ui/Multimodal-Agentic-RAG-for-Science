@@ -17,10 +17,14 @@ from .schemas import (
     ResearchResponse, TaskInfo, ModelConfig, ConfigResponse,
     KnowledgeBaseCreateRequest, KnowledgeBaseResponse, KnowledgeBaseListResponse,
     KnowledgeBaseIngestRequest, KnowledgeBaseJobResponse,
+    KnowledgeBaseDeleteRequest, DeleteResult,
+    HistoryRecordRequest, HistoryListResponse, DeleteHistoryRequest,
 )
 from .services import PROJECT_ROOT, TASKS, run_chat_api, run_research_api, stream_chat_api
+from .history import delete_history_records, list_history, upsert_history_record
 from .knowledge_bases import (
     create_knowledge_base,
+    delete_knowledge_bases,
     get_job,
     get_knowledge_base,
     list_knowledge_bases,
@@ -163,6 +167,31 @@ async def ingest_kb(
 @app.get("/api/knowledge-bases/jobs/{job_id}", response_model=KnowledgeBaseJobResponse)
 async def get_kb_job(job_id: str) -> KnowledgeBaseJobResponse:
     return KnowledgeBaseJobResponse(job=get_job(job_id))
+
+
+@app.delete("/api/knowledge-bases", response_model=DeleteResult)
+async def delete_kbs(request: KnowledgeBaseDeleteRequest) -> DeleteResult:
+    return delete_knowledge_bases(
+        request.ids,
+        confirm=request.confirm,
+        requested_by=request.requested_by,
+    )
+
+
+@app.get("/api/history", response_model=HistoryListResponse)
+async def history_records(workspace: str | None = None, query: str | None = None) -> HistoryListResponse:
+    return HistoryListResponse(records=list_history(workspace, query))
+
+
+@app.post("/api/history")
+async def save_history_record(request: HistoryRecordRequest):
+    return {"record": upsert_history_record(request), "message": "历史记录已保存"}
+
+
+@app.delete("/api/history")
+async def delete_history(request: DeleteHistoryRequest):
+    deleted_ids = delete_history_records(request.ids, request.confirm)
+    return {"deleted_ids": deleted_ids, "message": f"已删除 {len(deleted_ids)} 条历史记录"}
 
 
 @app.post("/api/research", response_model=ResearchResponse)

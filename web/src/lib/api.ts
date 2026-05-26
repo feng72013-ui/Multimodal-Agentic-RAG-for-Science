@@ -13,10 +13,14 @@ import type {
   KnowledgeBaseJobResponse,
   KnowledgeBaseListResponse,
   KnowledgeBaseResponse,
+  DeleteResult,
+  HistoryListResponse,
+  HistoryRecord,
 } from '../types';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '/api';
 const CONFIG_STORAGE_KEY = 'recommendate_model_config';
+const HISTORY_FALLBACK_STORAGE_KEY = 'mars-scholar.history-records.v1';
 
 export const fileUrl = (path: string) => `${API_BASE}/files?path=${encodeURIComponent(path)}`;
 
@@ -220,6 +224,101 @@ class ApiClient {
 
   async getKnowledgeBaseJob(jobId: string): Promise<KnowledgeBaseJobResponse> {
     return this.request<KnowledgeBaseJobResponse>(`/knowledge-bases/jobs/${jobId}`);
+  }
+
+  async deleteKnowledgeBases(ids: string[], requestedBy: string = 'ZS'): Promise<DeleteResult> {
+    return this.request<DeleteResult>('/knowledge-bases', {
+      method: 'DELETE',
+      body: JSON.stringify({ ids, confirm: true, requested_by: requestedBy }),
+    });
+  }
+
+  async listHistory(workspace?: string, query?: string): Promise<HistoryRecord[]> {
+    const params = new URLSearchParams();
+    if (workspace) params.set('workspace', workspace);
+    if (query) params.set('query', query);
+    const suffix = params.toString() ? `?${params.toString()}` : '';
+    try {
+      const response = await this.request<HistoryListResponse>(`/history${suffix}`);
+      return response.records;
+    } catch (error) {
+      console.warn('后端历史接口不可用，使用浏览器本地历史记录:', error);
+      return this.listLocalHistory(workspace, query);
+    }
+  }
+
+  async saveHistory(record: Omit<HistoryRecord, 'id' | 'created_at' | 'updated_at'>): Promise<void> {
+    try {
+      await this.request('/history', {
+        method: 'POST',
+        body: JSON.stringify(record),
+      });
+    } catch (error) {
+      console.warn('后端历史保存失败，已保存到浏览器本地历史记录:', error);
+      this.saveLocalHistory(record);
+    }
+  }
+
+  async deleteHistory(ids: string[]): Promise<void> {
+    try {
+      await this.request('/history', {
+        method: 'DELETE',
+        body: JSON.stringify({ ids, confirm: true }),
+      });
+    } catch (error) {
+      console.warn('后端历史删除失败，改为删除浏览器本地历史记录:', error);
+      this.deleteLocalHistory(ids);
+    }
+  }
+
+  private listLocalHistory(workspace?: string, query?: string): HistoryRecord[] {
+    const keyword = query?.trim().toLowerCase();
+    return this.loadLocalHistory()
+      .filter((record) => !workspace || record.workspace === workspace)
+      .filter((record) => {
+        if (!keyword) return true;
+        return (
+          record.title.toLowerCase().includes(keyword) ||
+          record.topic.toLowerCase().includes(keyword) ||
+          record.summary.toLowerCase().includes(keyword) ||
+          record.messages.some((message) => message.content.toLowerCase().includes(keyword))
+        );
+      })
+      .sort((left, right) => new Date(right.updated_at).getTime() - new Date(left.updated_at).getTime());
+  }
+
+  private saveLocalHistory(record: Omit<HistoryRecord, 'id' | 'created_at' | 'updated_at'>): void {
+    const records = this.loadLocalHistory();
+    const now = new Date().toISOString();
+    const existingIndex = records.findIndex(
+      (item) => item.workspace === record.workspace && item.session_id && item.session_id === record.session_id
+    );
+    const nextRecord: HistoryRecord = {
+      ...record,
+      id: existingIndex >= 0 ? records[existingIndex].id : `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+      created_at: existingIndex >= 0 ? records[existingIndex].created_at : now,
+      updated_at: now,
+    };
+    if (existingIndex >= 0) records[existingIndex] = nextRecord;
+    else records.push(nextRecord);
+    localStorage.setItem(HISTORY_FALLBACK_STORAGE_KEY, JSON.stringify(records));
+  }
+
+  private deleteLocalHistory(ids: string[]): void {
+    const targetIds = new Set(ids);
+    const records = this.loadLocalHistory().filter((record) => !targetIds.has(record.id));
+    localStorage.setItem(HISTORY_FALLBACK_STORAGE_KEY, JSON.stringify(records));
+  }
+
+  private loadLocalHistory(): HistoryRecord[] {
+    try {
+      const stored = localStorage.getItem(HISTORY_FALLBACK_STORAGE_KEY);
+      if (!stored) return [];
+      const parsed = JSON.parse(stored);
+      return Array.isArray(parsed) ? (parsed as HistoryRecord[]) : [];
+    } catch {
+      return [];
+    }
   }
 }
 

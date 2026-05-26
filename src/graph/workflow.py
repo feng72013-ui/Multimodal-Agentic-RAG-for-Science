@@ -31,7 +31,10 @@ from .tools import my_search, search_context
 
 ensure_project_paths()
 
-from project.recommendate_project.myllm import multiModal_llm
+try:
+    from project.recommendate_project.myllm import multiModal_llm
+except ModuleNotFoundError:
+    from myllm import multiModal_llm
 from vector_ingest_pipeline.utils import image_to_data_url
 
 
@@ -246,20 +249,21 @@ def _task_prompt_addendum(task_type: str) -> str:
             "如果只能找到部分依据，请明确边界。"
         ),
         "idea_review": (
-            "按“相关已有工作、与用户 idea 的相似点、潜在差异、可扩展创新点、"
-            "可行性风险、下一步检索建议”组织回答。不要给出无证据的学术价值判断。"
+            "这是 Idea 生成/评估模块，职责是把用户方向转成可验证研究思路，而不是泛泛文献综述。"
+            "请按“候选 idea、文献依据、创新差异、可行性评分、实验验证、风险与优化建议、下一步问题”组织；"
+            "每个 idea 都要说明具体任务、方法组件、数据/指标、预期贡献和证据边界。不要给出无证据的学术价值判断。"
         ),
         "literature_summary": (
-            "按“研究问题、核心方法、实验设置、主要结果、结论与局限、可复用启发”"
-            "组织结构化文献摘要。"
+            "这是文献阅读模块，职责是帮助用户精读一篇或少量论文。按“阅读结论、研究问题、方法框架、"
+            "实验设置、主要结果、图表/代码线索、局限、可复用笔记、待核对问题”组织结构化摘要。"
         ),
         "paper_compare": (
             "按“比较维度、各论文/方法共同点、关键差异、适用场景、证据来源”组织回答；"
             "没有足够片段时说明缺少哪一侧证据。"
         ),
         "research_plan": (
-            "按“研究目标、已有依据、可行路线、实验设计、风险与备选方案、阶段性产出”"
-            "组织研究计划；每个建议都应能追溯到检索证据或明确标注为推断。"
+            "这是文献调研模块，职责是围绕主题形成综述式报告。按“摘要、检索范围、主题聚类、核心论文表、"
+            "方法路线、实验评估脉络、研究空白、后续检索计划、证据边界”组织；每个建议都应能追溯到检索证据或明确标注为推断。"
         ),
     }
     return prompts.get(task_type, prompts["qa"])

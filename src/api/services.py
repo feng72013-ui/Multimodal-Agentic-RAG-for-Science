@@ -26,7 +26,7 @@ TASKS = [
     {
         "task_type": "literature_summary",
         "label": "文献总结",
-        "description": "按研究问题、方法、数据、指标、结果和局限组织总结。",
+        "description": "服务精读场景，按问题、方法、实验、结果、局限、可复用启发输出论文卡片。",
     },
     {
         "task_type": "paper_compare",
@@ -36,12 +36,12 @@ TASKS = [
     {
         "task_type": "idea_review",
         "label": "Idea 评审",
-        "description": "检索相关工作，分析创新空间、相似点、风险和实验设计。",
+        "description": "服务选题打磨场景，基于相关文献生成可行且有差异度的研究思路、风险和验证方案。",
     },
     {
         "task_type": "research_plan",
-        "label": "研究计划",
-        "description": "生成技术路线、baseline、指标、消融实验和阶段产出。",
+        "label": "文献调研",
+        "description": "服务领域调研场景，汇总主题趋势、方法路线、实验脉络、空白问题和后续检索计划。",
     },
 ]
 

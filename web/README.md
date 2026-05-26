@@ -22,6 +22,12 @@ npm run dev
 
 开发服务器将在 `http://localhost:3000` 启动。
 
+如果后端不是默认的 `8000` 端口，比如你用了 `PORT=8001 bash scripts/run_fastapi.sh`，请这样启动前端：
+
+```bash
+VITE_BACKEND_TARGET=http://localhost:8001 npm run dev
+```
+
 ## 构建生产版本
 
 ```bash
@@ -39,7 +45,7 @@ npm run build
 
 ## API 代理配置
 
-Vite 已配置代理，将 `/api` 请求转发到 `http://localhost:8000`。如果后端运行在其他端口，请修改 `vite.config.ts`。
+Vite 默认将 `/api`、`/assets`、`/processed_ocr` 转发到 `http://localhost:8000`。如果后端运行在其他端口，可以通过 `VITE_BACKEND_TARGET` 覆盖，例如 `VITE_BACKEND_TARGET=http://localhost:8001 npm run dev`。
 
 ## 项目结构
 

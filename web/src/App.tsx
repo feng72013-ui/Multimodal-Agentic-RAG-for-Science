@@ -3,9 +3,7 @@ import { ChatInterface } from './components/ChatInterface';
 import { KnowledgeBaseManager } from './components/KnowledgeBaseManager';
 import { ModelConfigPanel } from './components/ModelConfigPanel';
 import { apiClient } from './lib/api';
-import type { ChatState, KnowledgeBaseInfo, TaskType } from './types';
-
-type WorkspaceKey = 'idea' | 'reading' | 'survey' | 'knowledge' | 'model';
+import type { ChatState, KnowledgeBaseInfo, TaskType, WorkspaceKey } from './types';
 
 interface Workspace {
   key: WorkspaceKey;
@@ -13,6 +11,7 @@ interface Workspace {
   icon: string;
   title: string;
   placeholder: string;
+  description: string;
   taskType?: TaskType;
 }
 
@@ -23,6 +22,7 @@ const WORKSPACES: Workspace[] = [
     icon: '+',
     title: '科研 Idea 生成',
     placeholder: '输入你的研究方向、约束或初步想法...',
+    description: '生成可评估的研究思路，突出创新差异、可行性、实验协议和优化建议。',
     taskType: 'idea_review',
   },
   {
@@ -31,6 +31,7 @@ const WORKSPACES: Workspace[] = [
     icon: 'R',
     title: '文献阅读',
     placeholder: '输入论文标题、方法名或需要精读的问题...',
+    description: '围绕单篇或少量论文做精读，沉淀阅读笔记、图表线索和 AI 辅助分析。',
     taskType: 'literature_summary',
   },
   {
@@ -39,6 +40,7 @@ const WORKSPACES: Workspace[] = [
     icon: 'S',
     title: '智能调研报告生成',
     placeholder: '请输入您想调研的问题...',
+    description: '组织完整讨论与调研报告，支持按主题、时间和证据边界复盘。',
     taskType: 'research_plan',
   },
   {
@@ -47,6 +49,7 @@ const WORKSPACES: Workspace[] = [
     icon: 'K',
     title: '知识库管理',
     placeholder: '输入需要检索或管理的知识库问题...',
+    description: '创建、入库、检索和删除知识库，删除动作会进行权限校验、二次确认和审计记录。',
   },
   {
     key: 'model',
@@ -54,6 +57,7 @@ const WORKSPACES: Workspace[] = [
     icon: 'M',
     title: '模型配置',
     placeholder: '输入模型、检索或评估配置相关问题...',
+    description: '配置多模态模型与向量模型参数。',
   },
 ];
 
@@ -117,11 +121,21 @@ function loadWorkspaceStates(): Record<WorkspaceKey, ChatState> {
 
 function App() {
   const [activeWorkspace, setActiveWorkspace] = useState<WorkspaceKey>('idea');
+  const [workspaceView, setWorkspaceView] = useState<'new' | 'history'>('new');
   const [workspaceStates, setWorkspaceStates] = useState(loadWorkspaceStates);
   const [knowledgeBases, setKnowledgeBases] = useState<KnowledgeBaseInfo[]>([]);
   const [selectedKnowledgeBaseId, setSelectedKnowledgeBaseId] = useState('');
   const currentWorkspace = WORKSPACES.find((item) => item.key === activeWorkspace) ?? WORKSPACES[0];
   const currentChatState = workspaceStates[activeWorkspace];
+
+  const startNewChat = (workspaceKey: WorkspaceKey) => {
+    setWorkspaceStates((previousStates) => ({
+      ...previousStates,
+      [workspaceKey]: createChatState(),
+    }));
+    setActiveWorkspace(workspaceKey);
+    setWorkspaceView('new');
+  };
 
   const setCurrentChatState = useMemo(
     () => (updater: ChatState | ((previous: ChatState) => ChatState)) => {
@@ -173,15 +187,43 @@ function App() {
 
         <nav className="workspace-nav" aria-label="工作区菜单">
           {WORKSPACES.map((workspace) => (
-            <button
+            <div
+              className={`nav-group ${workspace.key === activeWorkspace ? 'active' : ''}`}
               key={workspace.key}
-              className={`nav-item ${workspace.key === activeWorkspace ? 'active' : ''}`}
-              onClick={() => setActiveWorkspace(workspace.key)}
-              type="button"
             >
-              <span className="nav-icon">{workspace.icon}</span>
-              <span>{workspace.label}</span>
-            </button>
+              <button
+                className={`nav-item ${workspace.key === activeWorkspace ? 'active' : ''}`}
+                onClick={() => {
+                  setActiveWorkspace(workspace.key);
+                  setWorkspaceView('new');
+                }}
+                type="button"
+              >
+                <span className="nav-icon">{workspace.icon}</span>
+                <span>{workspace.label}</span>
+                {workspace.taskType && <span className="nav-caret">▴</span>}
+              </button>
+              {workspace.taskType && workspace.key === activeWorkspace && (
+                <div className="nav-submenu">
+                  <button
+                    className={`nav-subitem ${workspaceView === 'new' ? 'active' : ''}`}
+                    onClick={() => startNewChat(workspace.key)}
+                    type="button"
+                  >
+                    <span className="nav-subicon">+</span>
+                    <span>新建{workspace.label.replace('生成', '')}</span>
+                  </button>
+                  <button
+                    className={`nav-subitem ${workspaceView === 'history' ? 'active' : ''}`}
+                    onClick={() => setWorkspaceView('history')}
+                    type="button"
+                  >
+                    <span className="nav-subicon">▣</span>
+                    <span>历史{workspace.label.replace('生成', '')}</span>
+                  </button>
+                </div>
+              )}
+            </div>
           ))}
         </nav>
       </aside>
@@ -201,15 +243,20 @@ function App() {
         ) : (
           <ChatInterface
             key={activeWorkspace}
+            workspaceKey={activeWorkspace}
+            viewMode={workspaceView}
             title={currentWorkspace.title}
             activeLabel={currentWorkspace.label}
             inputPlaceholder={currentWorkspace.placeholder}
+            description={currentWorkspace.description}
             taskTypeHint={currentWorkspace.taskType}
             selectedKnowledgeBaseId={selectedKnowledgeBaseId}
             knowledgeBases={knowledgeBases}
             onKnowledgeBaseChange={setSelectedKnowledgeBaseId}
             chatState={currentChatState}
             setChatState={setCurrentChatState}
+            onOpenChat={() => setWorkspaceView('new')}
+            onNewChat={() => startNewChat(activeWorkspace)}
           />
         )}
       </main>

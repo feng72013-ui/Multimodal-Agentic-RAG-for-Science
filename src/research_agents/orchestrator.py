@@ -496,7 +496,9 @@ def render_polished_report_with_glm4_flash(
             "6) 文献阅读任务优先按“核心结论、研究思路、方法框架、实验结果、代码开源情况、证据边界”组织；"
             "7) 代码是否开源必须依据 evidence 中的 URL 或 source code/code/github 信号判断；"
             "8) 若 task_type 为 research_plan，输出标题必须是“文献调研报告”，并按“摘要、调研范围与检索概览、"
-            "核心论文速览、主题聚类与趋势、方法路线对比、实验评估脉络、局限挑战、研究建议与展望、参考依据、证据边界”组织。"
+            "核心论文速览、主题聚类与趋势、方法路线对比、实验评估脉络、局限挑战、研究建议与展望、参考依据、证据边界”组织；"
+            "9) 若 task_type 为 idea_review，输出标题必须是“Idea 生成与评估”，并给出 2-3 个具体研究思路，"
+            "每个思路包含任务定义、创新差异、可行性、实验协议、风险和优化建议。"
         )
         response = glm4_flash.invoke(
             [
@@ -616,6 +618,7 @@ def render_literature_summary_report(review: dict[str, Any], planner: dict[str, 
 
     lines.extend(render_related_work_compact(review))
     lines.extend(render_evidence_boundary(review))
+    lines.extend(render_quality_rubric("literature_summary"))
     lines.extend(["## 下一步建议", ""])
     lines.extend(f"- {step}" for step in planner.get("next_steps", [])[:3])
     return "\n".join(lines).rstrip() + "\n"
@@ -645,24 +648,79 @@ def render_qa_report(review: dict[str, Any], planner: dict[str, Any]) -> str:
 
 def render_idea_report(review: dict[str, Any], planner: dict[str, Any]) -> str:
     direct_answer = review.get("direct_answer") or {}
+    scores = review.get("scores") or {}
     lines = [
-        "# Idea 评估",
+        "# Idea 生成与评估",
         "",
-        "## 结论",
+        "## 模块定位",
+        "",
+        "本模块负责把用户的初步方向转化为可评估、可实验、可迭代的科研 idea；文献阅读负责精读论文，文献调研负责形成领域综述。",
+        "",
+        "## 总体判断",
         "",
         direct_answer.get("verdict") or "这个方向可以继续探索，但需要结合已有工作明确差异点和实验验证方式。",
         "",
-        "## 可推进方向",
+        f"- 创新潜力：{scores.get('novelty', scores.get('overall', 0.0))}",
+        f"- 可行性：{scores.get('feasibility', 0.0)}",
+        f"- 最高相关工作相似度：{scores.get('max_related_similarity', 0.0)}",
+        "",
+        "## 候选研究思路",
         "",
     ]
-    lines.extend(f"- {item}" for item in (review.get("innovation_suggestions") or [])[:4])
+    suggestions = (review.get("innovation_suggestions") or [])[:3]
+    experiments = (review.get("experiment_suggestions") or [])[:3]
+    if suggestions:
+        for index, item in enumerate(suggestions, start=1):
+            experiment = experiments[index - 1] if index - 1 < len(experiments) else "先固定公开数据集、强 baseline、主指标和消融模块，形成最小验证协议。"
+            lines.extend(
+                [
+                    f"### 思路 {index}",
+                    "",
+                    f"- **研究问题**：{truncate(str(item), 280)}",
+                    "- **创新差异**：优先落在新任务约束、新模型组件、新评测协议或跨模态证据融合上，并与下方相关工作逐项对齐。",
+                    f"- **实验协议**：{truncate(str(experiment), 280)}",
+                    "- **可行性判断**：如果已有工作相似度偏高，应收窄到更具体的数据、场景或约束；如果证据不足，应先补充检索。",
+                    "",
+                ]
+            )
+    else:
+        lines.append("- 暂未形成稳定候选思路，请补充研究对象、应用场景、可用数据或预期方法。")
     lines.extend(["", "## 实验验证", ""])
-    lines.extend(f"- {item}" for item in (review.get("experiment_suggestions") or [])[:4])
+    lines.extend(f"- {item}" for item in experiments[:4])
+    lines.extend(["", "## 风险与优化建议", ""])
+    risks = review.get("risk_assessment") or []
+    gaps = review.get("gaps") or []
+    if risks or gaps:
+        lines.extend(f"- {truncate(str(item), 260)}" for item in [*risks[:3], *gaps[:3]])
+    else:
+        lines.append("- 主要风险是与已有工作贡献重叠、实验资源不明确或评价指标不能支撑核心主张。")
     lines.extend(render_related_work_compact(review))
-    lines.extend(render_scores_compact(review))
+    lines.extend(render_quality_rubric("idea_review"))
     lines.extend(["## 下一步建议", ""])
     lines.extend(f"- {step}" for step in planner.get("next_steps", [])[:3])
     return "\n".join(lines).rstrip() + "\n"
+
+
+def render_quality_rubric(task_type: str) -> list[str]:
+    rubrics = {
+        "idea_review": [
+            "候选 idea 需具备明确任务、方法组件、数据/指标和可检验贡献。",
+            "创新性判断必须关联相关工作相似点与差异点。",
+            "可行性判断必须指出资源、baseline、消融和失败风险。",
+        ],
+        "literature_summary": [
+            "摘要需覆盖研究问题、方法、实验、结果、局限和证据页/来源。",
+            "不得把未检索到的实验数值或代码链接补全成事实。",
+        ],
+        "research_plan": [
+            "调研报告需覆盖主题趋势、核心论文、方法路线、实验脉络和研究空白。",
+            "每条建议需区分文献证据与模型推断。",
+        ],
+    }
+    items = rubrics.get(task_type, [])
+    if not items:
+        return []
+    return ["## 输出质量标准", "", *[f"- {item}" for item in items], ""]
 
 
 def render_compare_report(review: dict[str, Any], planner: dict[str, Any]) -> str:
@@ -767,6 +825,7 @@ def render_research_plan_report(
         lines.append("- 暂无稳定论文依据。")
 
     lines.extend(render_evidence_boundary(review))
+    lines.extend(render_quality_rubric("research_plan"))
     return "\n".join(lines).rstrip() + "\n"
 
 

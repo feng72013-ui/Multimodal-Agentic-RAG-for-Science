@@ -15,6 +15,7 @@ from typing import Any
 from fastapi import HTTPException, UploadFile
 
 from .schemas import (
+    DeleteResult,
     KnowledgeBaseDocument,
     KnowledgeBaseInfo,
     KnowledgeBaseIngestRequest,
@@ -25,6 +26,7 @@ from .services import PROJECT_ROOT
 
 KB_ROOT = PROJECT_ROOT / "knowledge_bases"
 REGISTRY_PATH = KB_ROOT / "registry.json"
+AUDIT_LOG_PATH = KB_ROOT / "delete_audit.jsonl"
 UPLOAD_TOPIC = "uploads"
 
 _jobs: dict[str, KnowledgeBaseJobInfo] = {}
@@ -106,6 +108,90 @@ def update_knowledge_base(updated: KnowledgeBaseInfo) -> KnowledgeBaseInfo:
         next_items.append(updated)
     save_registry(next_items)
     return updated
+
+
+def require_delete_permission(requested_by: str) -> None:
+    allowed = {
+        value.strip()
+        for value in os.getenv("MARS_KB_DELETE_ADMINS", "ZS,admin").split(",")
+        if value.strip()
+    }
+    if requested_by not in allowed:
+        raise HTTPException(status_code=403, detail="当前用户没有删除知识库权限。")
+
+
+def delete_knowledge_bases(kb_ids: list[str], *, confirm: bool, requested_by: str) -> DeleteResult:
+    require_delete_permission(requested_by)
+    if not confirm:
+        raise HTTPException(status_code=400, detail="删除知识库需要二次确认。")
+
+    items = load_registry()
+    by_id = {item.id: item for item in items}
+    deleted_ids: list[str] = []
+    failed: dict[str, str] = {}
+
+    for kb_id in kb_ids:
+        item = by_id.get(kb_id)
+        if not item:
+            failed[kb_id] = "知识库不存在。"
+            continue
+        try:
+            _drop_milvus_collection(item.collection_name)
+            root = kb_dir(item.id)
+            if root.exists():
+                shutil.rmtree(root)
+            deleted_ids.append(item.id)
+            _append_delete_audit(
+                {
+                    "event": "knowledge_base_deleted",
+                    "kb_id": item.id,
+                    "name": item.name,
+                    "collection_name": item.collection_name,
+                    "document_count": item.document_count,
+                    "requested_by": requested_by,
+                    "deleted_at": utc_now(),
+                }
+            )
+        except Exception as exc:
+            failed[kb_id] = str(exc)
+
+    if deleted_ids:
+        save_registry([item for item in items if item.id not in set(deleted_ids)])
+
+    message = f"已删除 {len(deleted_ids)} 个知识库。"
+    if failed:
+        message += f" {len(failed)} 个删除失败。"
+    return DeleteResult(deleted_ids=deleted_ids, failed=failed, message=message)
+
+
+def _drop_milvus_collection(collection_name: str) -> None:
+    if not collection_name:
+        return
+    try:
+        from milvus_db.client import create_client
+        from milvus_db.config import MilvusSettings
+
+        settings = MilvusSettings()
+        client = create_client(settings)
+        if client.has_collection(collection_name):
+            client.drop_collection(collection_name)
+    except Exception as exc:
+        # Local files and registry are still the source of truth for this app.
+        # Keep an audit trail instead of blocking deletion when Milvus is offline.
+        _append_delete_audit(
+            {
+                "event": "knowledge_base_collection_drop_failed",
+                "collection_name": collection_name,
+                "error": str(exc),
+                "created_at": utc_now(),
+            }
+        )
+
+
+def _append_delete_audit(entry: dict[str, Any]) -> None:
+    ensure_registry()
+    with AUDIT_LOG_PATH.open("a", encoding="utf-8") as writer:
+        writer.write(json.dumps(entry, ensure_ascii=False) + "\n")
 
 
 def create_knowledge_base(name: str, description: str = "") -> KnowledgeBaseInfo:

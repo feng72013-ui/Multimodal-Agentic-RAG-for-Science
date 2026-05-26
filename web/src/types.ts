@@ -125,6 +125,32 @@ export interface Message {
   retrievedImages?: RetrievedImage[];
 }
 
+export type WorkspaceKey = 'idea' | 'reading' | 'survey' | 'knowledge' | 'model';
+
+export interface HistoryRecord {
+  id: string;
+  workspace: 'idea' | 'reading' | 'survey';
+  title: string;
+  topic: string;
+  session_id: string;
+  knowledge_base_id?: string | null;
+  task_type?: string | null;
+  created_at: string;
+  updated_at: string;
+  messages: Array<{
+    id: string;
+    role: 'user' | 'assistant';
+    content: string;
+    timestamp: string;
+  }>;
+  summary: string;
+  tags: string[];
+}
+
+export interface HistoryListResponse {
+  records: HistoryRecord[];
+}
+
 export interface ChatState {
   sessionId: string;
   messages: Message[];
@@ -193,4 +219,10 @@ export interface KnowledgeBaseJobInfo {
 
 export interface KnowledgeBaseJobResponse {
   job: KnowledgeBaseJobInfo;
+}
+
+export interface DeleteResult {
+  deleted_ids: string[];
+  failed: Record<string, string>;
+  message: string;
 }

@@ -9,10 +9,11 @@ from langchain_core.embeddings import Embeddings
 from langchain_openai import ChatOpenAI
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
+TEST_ROOT = PROJECT_ROOT / "test"
 WORKSPACE_ROOT = PROJECT_ROOT.parents[1]
 load_dotenv(PROJECT_ROOT / ".env")
 
-for _path in (PROJECT_ROOT / "src", PROJECT_ROOT, WORKSPACE_ROOT):
+for _path in (PROJECT_ROOT / "src", PROJECT_ROOT, TEST_ROOT, WORKSPACE_ROOT):
     _path_str = str(_path)
     if _path_str not in sys.path:
         sys.path.insert(0, _path_str)

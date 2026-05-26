@@ -12,7 +12,10 @@ ensure_project_paths()
 
 from milvus_db.client import create_client
 from milvus_db.config import MilvusSettings
-from project.recommendate_project.myllm import embedding
+try:
+    from project.recommendate_project.myllm import embedding
+except ModuleNotFoundError:
+    from myllm import embedding
 
 
 @tool("search_context", parse_docstring=True)
@@ -80,4 +83,3 @@ def my_search(query: str) -> str:
         return "没有搜索到任何内容！"
     except Exception as exc:
         return f"没有搜索到任何内容！错误：{exc}"
-

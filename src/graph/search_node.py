@@ -14,7 +14,10 @@ ensure_project_paths()
 
 from milvus_db.client import create_client
 from milvus_db.config import MilvusSettings
-from test_retrieval_eval.retrievers import RetrievalEvaluator, normalize_hits
+try:
+    from test_retrieval_eval.retrievers import RetrievalEvaluator, normalize_hits
+except ModuleNotFoundError:
+    from test.test_retrieval_eval.retrievers import RetrievalEvaluator, normalize_hits
 from vector_ingest_pipeline.config import IngestConfig
 from vector_ingest_pipeline.embeddings import DashScopeMultimodalEmbedder
 from vector_ingest_pipeline.utils import image_to_data_url

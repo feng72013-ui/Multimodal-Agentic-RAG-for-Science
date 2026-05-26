@@ -8,7 +8,10 @@ from typing import Any
 from milvus_db.client import create_client
 from milvus_db.config import MilvusSettings
 from profile_store_pipeline.common import PAPER_PROFILE_COLLECTION
-from test_retrieval_eval.retrievers import RetrievalEvaluator
+try:
+    from test_retrieval_eval.retrievers import RetrievalEvaluator
+except ModuleNotFoundError:
+    from test.test_retrieval_eval.retrievers import RetrievalEvaluator
 from vector_ingest_pipeline.config import IngestConfig
 from vector_ingest_pipeline.utils import truncate
 from idea_review_pipeline.review import expand_query_text

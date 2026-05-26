@@ -65,6 +65,49 @@ class ChatResponse(BaseModel):
     state: dict[str, Any] = Field(default_factory=dict)
 
 
+class HistoryMessage(BaseModel):
+    id: str
+    role: Literal["user", "assistant"]
+    content: str
+    timestamp: str
+
+
+class HistoryRecord(BaseModel):
+    id: str
+    workspace: Literal["idea", "reading", "survey"]
+    title: str
+    topic: str = ""
+    session_id: str = ""
+    knowledge_base_id: str | None = None
+    task_type: str | None = None
+    created_at: str
+    updated_at: str
+    messages: list[HistoryMessage] = Field(default_factory=list)
+    summary: str = ""
+    tags: list[str] = Field(default_factory=list)
+
+
+class HistoryRecordRequest(BaseModel):
+    workspace: Literal["idea", "reading", "survey"]
+    title: str = Field(..., min_length=1, max_length=160)
+    topic: str = Field(default="", max_length=160)
+    session_id: str = ""
+    knowledge_base_id: str | None = None
+    task_type: str | None = None
+    messages: list[HistoryMessage] = Field(default_factory=list)
+    summary: str = ""
+    tags: list[str] = Field(default_factory=list)
+
+
+class HistoryListResponse(BaseModel):
+    records: list[HistoryRecord]
+
+
+class DeleteHistoryRequest(BaseModel):
+    ids: list[str] = Field(..., min_length=1)
+    confirm: bool = False
+
+
 class ErrorResponse(BaseModel):
     detail: str
 
@@ -139,6 +182,18 @@ class KnowledgeBaseIngestRequest(BaseModel):
     create_collection: bool = True
     drop_existing: bool = False
     use_model_descriptions: bool = False
+
+
+class KnowledgeBaseDeleteRequest(BaseModel):
+    ids: list[str] = Field(..., min_length=1)
+    confirm: bool = False
+    requested_by: str = "ZS"
+
+
+class DeleteResult(BaseModel):
+    deleted_ids: list[str] = Field(default_factory=list)
+    failed: dict[str, str] = Field(default_factory=dict)
+    message: str
 
 
 class KnowledgeBaseJobInfo(BaseModel):

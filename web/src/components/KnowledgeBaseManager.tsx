@@ -20,6 +20,7 @@ export function KnowledgeBaseManager({
   const [uploading, setUploading] = useState(false);
   const [job, setJob] = useState<KnowledgeBaseJobInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [selectedDeleteIds, setSelectedDeleteIds] = useState<Set<string>>(new Set());
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const selectedKnowledgeBase =
@@ -108,6 +109,32 @@ export function KnowledgeBaseManager({
     }
   };
 
+  const handleDeleteKnowledgeBases = async (ids: string[]) => {
+    if (!ids.length) return;
+    const targets = knowledgeBases.filter((knowledgeBase) => ids.includes(knowledgeBase.id));
+    const names = targets.map((knowledgeBase) => knowledgeBase.name).join('、');
+    const confirmed = window.confirm(
+      `确认删除 ${targets.length} 个知识库吗？\n\n${names}\n\n该操作会清除上传 PDF、处理结果、本地 registry，并尝试删除对应 Milvus collection；后端会记录删除审计日志。`
+    );
+    if (!confirmed) return;
+
+    try {
+      setError(null);
+      const result = await apiClient.deleteKnowledgeBases(ids);
+      const latest = await apiClient.listKnowledgeBases();
+      onKnowledgeBasesChange(latest);
+      setSelectedDeleteIds(new Set());
+      if (ids.includes(selectedKnowledgeBaseId)) {
+        onSelectKnowledgeBase(latest[0]?.id || '');
+      }
+      if (Object.keys(result.failed).length) {
+        setError(result.message);
+      }
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : '删除知识库失败');
+    }
+  };
+
   return (
     <div className="kb-workspace">
       <header className="kb-header">
@@ -142,16 +169,49 @@ export function KnowledgeBaseManager({
           </div>
 
           <div className="kb-items">
-            {knowledgeBases.map((knowledgeBase) => (
+            <div className="kb-bulk-actions">
               <button
+                className="btn btn-danger btn-compact"
+                type="button"
+                disabled={!selectedDeleteIds.size}
+                onClick={() => handleDeleteKnowledgeBases(Array.from(selectedDeleteIds))}
+              >
+                批量删除
+              </button>
+              <span>{selectedDeleteIds.size ? `已选 ${selectedDeleteIds.size} 个` : '选择后可删除'}</span>
+            </div>
+            {knowledgeBases.map((knowledgeBase) => (
+              <div
                 key={knowledgeBase.id}
                 className={`kb-item ${selectedKnowledgeBase?.id === knowledgeBase.id ? 'active' : ''}`}
-                onClick={() => onSelectKnowledgeBase(knowledgeBase.id)}
-                type="button"
               >
-                <span>{knowledgeBase.name}</span>
-                <small>{statusLabel(knowledgeBase.status)} · {knowledgeBase.document_count} PDF</small>
-              </button>
+                <label className="kb-check" onClick={(event) => event.stopPropagation()}>
+                  <input
+                    type="checkbox"
+                    checked={selectedDeleteIds.has(knowledgeBase.id)}
+                    onChange={() =>
+                      setSelectedDeleteIds((previous) => {
+                        const next = new Set(previous);
+                        if (next.has(knowledgeBase.id)) next.delete(knowledgeBase.id);
+                        else next.add(knowledgeBase.id);
+                        return next;
+                      })
+                    }
+                    aria-label="选择知识库"
+                  />
+                </label>
+                <button className="kb-item-main" onClick={() => onSelectKnowledgeBase(knowledgeBase.id)} type="button">
+                  <span>{knowledgeBase.name}</span>
+                  <small>{statusLabel(knowledgeBase.status)} · {knowledgeBase.document_count} PDF</small>
+                </button>
+                <button
+                  className="kb-inline-delete"
+                  type="button"
+                  onClick={() => handleDeleteKnowledgeBases([knowledgeBase.id])}
+                >
+                  删除
+                </button>
+              </div>
             ))}
             {!knowledgeBases.length && <div className="kb-empty">还没有知识库。</div>}
           </div>
@@ -201,6 +261,13 @@ export function KnowledgeBaseManager({
                   disabled={!selectedKnowledgeBase.document_count || job?.status === 'running'}
                 >
                   开始 OCR / 切块 / 入库
+                </button>
+                <button
+                  className="btn btn-danger"
+                  onClick={() => handleDeleteKnowledgeBases([selectedKnowledgeBase.id])}
+                  type="button"
+                >
+                  删除知识库
                 </button>
               </div>
 

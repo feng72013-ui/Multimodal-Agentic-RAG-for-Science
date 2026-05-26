@@ -154,7 +154,10 @@ def llm_task_profile(
     related: dict[str, Any],
     evidence_chunks: list[dict[str, Any]],
 ) -> dict[str, Any]:
-    from project.recommendate_project.myllm import llm
+    try:
+        from project.recommendate_project.myllm import llm
+    except ModuleNotFoundError:
+        from myllm import llm
 
     system = SystemMessage(
         content=(

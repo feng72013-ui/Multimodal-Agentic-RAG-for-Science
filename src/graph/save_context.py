@@ -15,7 +15,10 @@ ensure_project_paths()
 
 from milvus_db.client import create_client
 from milvus_db.config import MilvusSettings
-from project.recommendate_project.myllm import embedding
+try:
+    from project.recommendate_project.myllm import embedding
+except ModuleNotFoundError:
+    from myllm import embedding
 from vector_ingest_pipeline.utils import truncate
 
 
@@ -152,4 +155,3 @@ def get_milvus_writer() -> OptimizedMilvusAsyncWriter:
     settings = MilvusSettings(collection_name=CONTEXT_COLLECTION_NAME)
     client = create_client(settings)
     return OptimizedMilvusAsyncWriter(client=client, settings=settings)
-
