@@ -52,7 +52,7 @@ recommendate_project/
 ├── main.py                  # 命令行聊天入口
 ├── pyproject.toml           # Python 项目配置
 ├── requirements.txt         # pip 依赖清单
-├── .env.example             # 环境变量模板，不提交真实 .env
+├── .env.example             # 环境变量模板
 ├── docs/                    # 阶段文档、设计记录和 README 图片
 ├── src/                     # Python 源码
 │   ├── api/                 # FastAPI 接口
@@ -68,9 +68,9 @@ recommendate_project/
 ├── test/                    # 离线评测脚本和样例
 ├── web/                     # Vite + React 前端
 ├── scripts/                 # 服务启动脚本
-├── data/                    # 本地论文和生成产物，默认不提交
-├── knowledge_bases/         # 用户上传知识库，默认不提交
-└── output/                  # 日志和运行输出，默认不提交
+├── data/                    # 本地论文和生成产物
+├── knowledge_bases/         # 用户上传知识库
+└── output/                  # 日志和运行输出
 ```
 
 ## 快速开始
@@ -128,7 +128,6 @@ data/processed_ocr/
 data/processed_rag/
 ```
 
-这些目录通常包含 PDF、OCR 结果、embedding cache 和中间 JSONL，体积较大，已在 `.gitignore` 中排除。项目仓库只提交代码、文档、配置模板和小样例，真实数据与密钥保留在本地。
 
 ## 技术栈
 
