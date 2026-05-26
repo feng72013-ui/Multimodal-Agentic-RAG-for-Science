@@ -76,7 +76,7 @@ recommendate_project/
 ## 快速开始
 
 ```bash
-cd /home/lf/mount/LLM/project/recommendate_project
+cd /对应目录
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
