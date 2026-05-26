@@ -1,0 +1,5 @@
+{"task_id":"agent_001","task_type":"idea_review","query":"Use RAG and LLM agents to improve next item recommendation on Amazon with Recall and NDCG evaluation.","min_related":3}
+{"task_id":"agent_002","task_type":"idea_review","query":"Evaluate whether graph neural networks can improve fairness-aware recommendation while maintaining ranking accuracy.","min_related":3}
+{"task_id":"agent_003","task_type":"idea_review","query":"Design a privacy-preserving recommender with watermarking for LLM-based recommendation explanations.","min_related":1}
+{"task_id":"agent_004","task_type":"idea_review","query":"Can contrastive learning and multimodal item images improve cold-start recommendation on Yelp or MovieLens?","min_related":3}
+{"task_id":"agent_005","task_type":"idea_review","query":"Build a benchmark to compare sequential recommendation models under robustness and popularity bias metrics.","min_related":3}

@@ -1,0 +1,10 @@
+{"query_id":"kw_green_red_watermark","query":"Green-Red Watermarking for recommender systems","query_type":"keyword","expected_terms":["green-red","watermarking","recommender"],"expected_category":"text"}
+{"query_id":"kw_sigformer","query":"SIGformer sign-aware graph transformer recommendation","query_type":"keyword","expected_terms":["SIGformer","sign-aware","graph transformer"],"expected_category":"text"}
+{"query_id":"semantic_rag_recommender","query":"哪些论文研究 RAG 或 retrieval augmented generation 在推荐系统中的应用？","query_type":"semantic","expected_terms":["RAG","retrieval","generation","recommendation"],"expected_category":"text"}
+{"query_id":"semantic_fairness_privacy","query":"推荐系统中如何处理公平性、隐私或水印保护问题？","query_type":"semantic","expected_terms":["fairness","privacy","watermark"],"expected_category":"text"}
+{"query_id":"classic_lightgcn","query":"LightGCN 如何简化图卷积推荐模型？","query_type":"semantic","expected_terms":["LightGCN","graph convolution","recommendation"],"expected_category":"text"}
+{"query_id":"classic_bert4rec","query":"BERT4Rec 和序列推荐中的 bidirectional encoder 有什么关系？","query_type":"semantic","expected_terms":["BERT4Rec","sequential","bidirectional"],"expected_category":"text"}
+{"query_id":"image_framework","query":"找出展示推荐模型整体框架或 architecture 的图。","query_type":"image_table","expected_terms":["framework","architecture","figure"],"expected_category":"image"}
+{"query_id":"table_benchmark","query":"有哪些表格总结 benchmark、dataset 或 evaluation metrics？","query_type":"image_table","expected_terms":["benchmark","dataset","evaluation","metrics"],"expected_category":"table"}
+{"query_id":"multimodal_recommender","query":"哪些论文讨论多模态推荐中的视觉语义表示或 modality alignment？","query_type":"semantic","expected_terms":["multimodal","visual","modality","alignment"],"expected_category":"text"}
+{"query_id":"llm_recommender","query":"大语言模型如何用于 next item recommendation 或 generative recommendation？","query_type":"semantic","expected_terms":["large language model","next-item","generative recommendation"],"expected_category":"text"}

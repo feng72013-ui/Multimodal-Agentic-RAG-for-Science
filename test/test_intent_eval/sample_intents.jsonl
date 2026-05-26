@@ -1,0 +1,51 @@
+{"query_id":"qa_001","query":"LightGCN 如何简化图卷积推荐模型？","expected_task_type":"qa"}
+{"query_id":"qa_002","query":"什么是 BERT4Rec 中的 bidirectional encoder？","expected_task_type":"qa"}
+{"query_id":"qa_003","query":"有哪些论文研究 RAG 在推荐系统中的应用？","expected_task_type":"qa"}
+{"query_id":"qa_004","query":"请解释推荐系统里的 exposure bias。","expected_task_type":"qa"}
+{"query_id":"qa_005","query":"找出展示推荐模型整体 architecture 的图。","expected_task_type":"qa"}
+{"query_id":"qa_006","query":"which papers discuss generative recommendation with LLMs?","expected_task_type":"qa"}
+{"query_id":"qa_007","query":"Explain collaborative filtering in recommender systems.","expected_task_type":"qa"}
+{"query_id":"qa_008","query":"推荐系统中 NDCG 和 Recall 有什么含义？","expected_task_type":"qa"}
+{"query_id":"qa_009","query":"请问 SASRec 的核心思想是什么？","expected_task_type":"qa"}
+{"query_id":"qa_010","query":"find tables about benchmark datasets and evaluation metrics.","expected_task_type":"qa"}
+{"query_id":"idea_001","query":"我有一个 idea：用 RAG 增强序列推荐，请评估有没有人做过以及创新性。","expected_task_type":"idea_review"}
+{"query_id":"idea_002","query":"这个研究想法是否已有相关工作：用水印保护推荐模型的知识产权？","expected_task_type":"idea_review"}
+{"query_id":"idea_003","query":"帮我评估一个科研创意，把 LLM agent 用于 next item recommendation 的可行性。","expected_task_type":"idea_review"}
+{"query_id":"idea_004","query":"我的想法是用因果公平性约束改进多模态推荐，学术价值怎么样？","expected_task_type":"idea_review"}
+{"query_id":"idea_005","query":"有没有人做过 graph transformer 和 sign-aware recommendation 的结合？","expected_task_type":"idea_review"}
+{"query_id":"idea_006","query":"Please review my idea about retrieval-augmented recommender systems and assess novelty.","expected_task_type":"idea_review"}
+{"query_id":"idea_007","query":"这个 idea 可行吗：用用户历史对话生成推荐解释并做个性化评估？","expected_task_type":"idea_review"}
+{"query_id":"idea_008","query":"请基于知识库判断我的创新点是否足够：用多智能体协作做推荐系统论文综述。","expected_task_type":"idea_review"}
+{"query_id":"idea_009","query":"我想做一个 privacy-preserving recommender watermarking 方法，请给扩展方向。","expected_task_type":"idea_review"}
+{"query_id":"idea_010","query":"Evaluate the feasibility of an idea: aligning visual semantics with product metadata for robust recommendation.","expected_task_type":"idea_review"}
+{"query_id":"summary_001","query":"请总结这篇 LightGCN 论文的研究问题、方法和实验结果。","expected_task_type":"literature_summary"}
+{"query_id":"summary_002","query":"对 BERT4Rec 做结构化摘要，包括方法、数据集、指标和结论。","expected_task_type":"literature_summary"}
+{"query_id":"summary_003","query":"帮我精读 Green-Red Watermarking for Recommender Systems 这篇论文。","expected_task_type":"literature_summary"}
+{"query_id":"summary_004","query":"summarize the paper about Text-Guided Visual Representation Learning for multimodal e-commerce recommendation.","expected_task_type":"literature_summary"}
+{"query_id":"summary_005","query":"请概括 SIGformer 的核心贡献和实验设置。","expected_task_type":"literature_summary"}
+{"query_id":"summary_006","query":"阅读这篇推荐系统公平性评价论文，并输出结构化摘要。","expected_task_type":"literature_summary"}
+{"query_id":"summary_007","query":"给我一份论文摘要：研究问题、核心方法、结果、局限。","expected_task_type":"literature_summary"}
+{"query_id":"summary_008","query":"paper reading: explain the main method and conclusion of SELF-RAG.","expected_task_type":"literature_summary"}
+{"query_id":"summary_009","query":"请总结一篇关于 generative recommendation 的论文。","expected_task_type":"literature_summary"}
+{"query_id":"summary_010","query":"帮我概括这篇 survey 的主要分类、结论与不足。","expected_task_type":"literature_summary"}
+{"query_id":"compare_001","query":"对比 LightGCN 和 NGCF 的方法区别。","expected_task_type":"paper_compare"}
+{"query_id":"compare_002","query":"BERT4Rec 与 SASRec 在序列建模上有什么差异？","expected_task_type":"paper_compare"}
+{"query_id":"compare_003","query":"比较 RAG 推荐论文和 LLM 推荐论文的核心思路。","expected_task_type":"paper_compare"}
+{"query_id":"compare_004","query":"SIGformer 和普通 graph transformer recommendation 的区别是什么？","expected_task_type":"paper_compare"}
+{"query_id":"compare_005","query":"Green-Red Watermarking 与传统 trigger-based watermarking 有哪些异同？","expected_task_type":"paper_compare"}
+{"query_id":"compare_006","query":"Compare contrastive learning recommender methods versus generative recommendation methods.","expected_task_type":"paper_compare"}
+{"query_id":"compare_007","query":"哪篇论文更适合作为多模态推荐 baseline，对比一下优缺点。","expected_task_type":"paper_compare"}
+{"query_id":"compare_008","query":"请比较几篇 benchmark 论文的数据集和 evaluation metrics。","expected_task_type":"paper_compare"}
+{"query_id":"compare_009","query":"LightGCN vs BERT4Rec: difference in graph recommendation and sequential recommendation.","expected_task_type":"paper_compare"}
+{"query_id":"compare_010","query":"对比论文 A 和论文 B 的实验结论，指出共同点和差异。","expected_task_type":"paper_compare"}
+{"query_id":"plan_001","query":"请为 RAG 推荐系统方向制定一个研究计划。","expected_task_type":"research_plan"}
+{"query_id":"plan_002","query":"基于现有论文，帮我设计一个实验方案验证多模态推荐的鲁棒性。","expected_task_type":"research_plan"}
+{"query_id":"plan_003","query":"给我一条技术路线：从文献调研到实现一个 LLM recommender baseline。","expected_task_type":"research_plan"}
+{"query_id":"plan_004","query":"如何推进一个关于推荐系统水印的开题 proposal？","expected_task_type":"research_plan"}
+{"query_id":"plan_005","query":"下一步怎么做才能把 causal fairness 用到推荐系统实验里？","expected_task_type":"research_plan"}
+{"query_id":"plan_006","query":"Create a roadmap for studying graph neural networks for recommender systems.","expected_task_type":"research_plan"}
+{"query_id":"plan_007","query":"请安排三阶段研究路线图，包括数据、模型、实验和论文写作。","expected_task_type":"research_plan"}
+{"query_id":"plan_008","query":"帮我规划一个 research plan，用于比较 sequential recommendation 中的 transformer 和 MLP。","expected_task_type":"research_plan"}
+{"query_id":"plan_009","query":"实验设计：怎样验证 retrieval augmentation 是否真的提升 next-item recommendation？","expected_task_type":"research_plan"}
+{"query_id":"plan_010","query":"如何开展一个关于推荐系统评价指标公平性的研究项目？","expected_task_type":"research_plan"}
+

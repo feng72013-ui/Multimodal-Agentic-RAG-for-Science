@@ -1,0 +1,20 @@
+{"idea_id":"idea_001","idea":"用 RAG 增强 next item recommendation，并比较不同检索粒度对 Recall 和 NDCG 的影响。"}
+{"idea_id":"idea_002","idea":"为推荐模型设计 green-red watermarking 方法，提升模型所有权验证的鲁棒性。","min_related":1}
+{"idea_id":"idea_003","idea":"将 LLM agent 用于推荐系统论文综述生成，并评估 citation coverage 和 factuality。"}
+{"idea_id":"idea_004","idea":"使用 graph transformer 处理 sign-aware recommendation 中的正负边信息。"}
+{"idea_id":"idea_005","idea":"结合 causal fairness 和 exposure bias，设计公平推荐的离线评价指标。"}
+{"idea_id":"idea_006","idea":"在多模态电商推荐中，用文本引导视觉表示学习并提升 cold-start 鲁棒性。"}
+{"idea_id":"idea_007","idea":"用 contrastive learning 改进 session-based recommendation 中的短序列稀疏问题。"}
+{"idea_id":"idea_008","idea":"构建一个 LLM-based generative recommendation baseline，用用户历史评论作为增强信号。"}
+{"idea_id":"idea_009","idea":"设计 privacy-preserving recommender system，在不泄露用户序列的情况下进行个性化推荐。"}
+{"idea_id":"idea_010","idea":"用 hypergraph neural network 建模用户、物品和属性之间的高阶关系。"}
+{"idea_id":"idea_011","idea":"比较 MLP 和 Transformer 在 sequential recommendation 中的效率和准确率。"}
+{"idea_id":"idea_012","idea":"针对推荐系统 benchmark shortcut 问题，设计新的数据划分和 evaluation protocol。"}
+{"idea_id":"idea_013","idea":"用 user profile generation 模拟用户行为，评估推荐算法在冷启动下的表现。"}
+{"idea_id":"idea_014","idea":"将 retrieval augmentation 用于 recommendation explanation，让解释引用具体论文证据。"}
+{"idea_id":"idea_015","idea":"提出一个质量感知的多正样本对比学习方法，用于 sequential recommendation。"}
+{"idea_id":"idea_016","idea":"研究 multimodal alignment 对商品推荐排序和视觉语义鲁棒性的影响。"}
+{"idea_id":"idea_017","idea":"使用 direct preference optimization 对 generative recommender 的 item token 偏好进行校准。"}
+{"idea_id":"idea_018","idea":"设计推荐系统公平性指标选择助手，根据任务目标推荐合适的 fairness metric。"}
+{"idea_id":"idea_019","idea":"将知识图谱和 RAG 结合，用于解释型推荐和相关论文检索。"}
+{"idea_id":"idea_020","idea":"开发一个自动化科研助手，对推荐系统 idea 进行 novelty、feasibility 和 academic value 评估。"}

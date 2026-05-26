@@ -1,0 +1,27 @@
+__pycache__/
+*.py[cod]
+.env
+.DS_Store
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Frontend generated artifacts.
+web/node_modules/
+web/dist/
+web/.vite/
+frontend/
+
+# Local assistant/editor state.
+.agents/
+.codex/
+
+# Large generated data. Keep the pipeline code in git; regenerate these locally.
+data/papers/
+data/processed_ocr/
+data/processed_rag/
+knowledge_bases/
+output/log/
+test/test_retrieval_eval/results/

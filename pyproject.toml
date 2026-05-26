@@ -1,0 +1,30 @@
+[project]
+name = "mars-scholar"
+version = "0.1.0"
+description = "Multimodal agentic RAG assistant for scientific research."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "arxiv>=2.1.0",
+  "dashscope>=1.20.0",
+  "fastapi>=0.115.0",
+  "langchain-community>=0.3.0",
+  "langchain-core>=0.3.0",
+  "langchain-openai>=0.2.0",
+  "langgraph>=0.2.0",
+  "numpy>=1.24.0",
+  "pydantic>=2.0.0",
+  "pymilvus>=2.4.0",
+  "python-multipart>=0.0.9",
+  "ragas>=0.2.0",
+  "requests>=2.31.0",
+  "sentence-transformers>=3.0.0",
+  "uvicorn[standard]>=0.30.0",
+  "zhipuai>=2.1.0",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
